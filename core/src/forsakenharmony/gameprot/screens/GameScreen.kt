@@ -36,7 +36,7 @@ class GameScreen : ScreenAdapter {
         world = World(engine)
 
         engine.addSystem(RenderingSystem(game.batch))
-        engine.addSystem(BackgroundSystem(true, game.batch))
+        //engine.addSystem(BackgroundSystem(true, game.batch))
         engine.addSystem(CameraSystem())
         engine.addSystem(MovementSystem())
         engine.addSystem(PhysicsSystem())
@@ -44,7 +44,7 @@ class GameScreen : ScreenAdapter {
 
         System.currentTimeMillis()
 
-        engine.getSystem(BackgroundSystem::class.java).setCamera(engine.getSystem(RenderingSystem::class.java).camera)
+        //engine.getSystem(BackgroundSystem::class.java).setCamera(engine.getSystem(RenderingSystem::class.java).camera)
 
         world.create()
     }

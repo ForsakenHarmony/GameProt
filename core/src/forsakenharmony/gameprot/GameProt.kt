@@ -18,6 +18,7 @@ class GameProt : Game() {
         batch = SpriteBatch()
         Settings;
         setScreen(GameScreen(this));
+
     }
 
     override fun render() {

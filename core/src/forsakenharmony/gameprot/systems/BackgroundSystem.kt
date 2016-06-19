@@ -51,6 +51,8 @@ class BackgroundSystem : IteratingSystem {
 
         renderQueue.sort(comparator)
 
+        camera.update()
+        batch.projectionMatrix = camera.combined
         batch.begin()
         for (entity: Entity in renderQueue) {
             val trans = traM.get(entity)

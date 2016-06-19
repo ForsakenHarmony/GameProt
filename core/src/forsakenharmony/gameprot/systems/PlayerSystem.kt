@@ -19,6 +19,9 @@ class PlayerSystem : IteratingSystem {
     private val mm: ComponentMapper<MovementComponent>
     private val tm: ComponentMapper<TransformComponent>
 
+    private val playerAccel = 1f
+    private val rotationSpeed = 90f
+
     constructor() : super(Family.all(InputComponent.javaClass, MovementComponent.javaClass, TransformComponent.javaClass).get()) {
         im = ComponentMapper.getFor(InputComponent.javaClass)
         mm = ComponentMapper.getFor(MovementComponent.javaClass)
@@ -35,6 +38,22 @@ class PlayerSystem : IteratingSystem {
         val left = Gdx.input.isKeyPressed(input.leftKey)
         val right = Gdx.input.isKeyPressed(input.rightKey)
 
-        val forwardVector = Vector2(1f, 0f).rotate(transform.rotation)
+        var forwardVector = Vector2(0f, 1f)
+        forwardVector = forwardVector.rotate(transform.rotation)
+
+        if (forward) {
+            movement.accel.set(forwardVector.scl(playerAccel, playerAccel))
+        }
+
+        if (back) {
+            movement.accel.set(0f, 0f)
+            movement.velocity.set(0f, 0f)
+        }
+
+        if (right) {
+            if (!left) transform.rotation -= rotationSpeed * deltaTime
+        } else if (left) {
+            transform.rotation += rotationSpeed * deltaTime
+        }
     }
 }

@@ -27,15 +27,13 @@ class CameraSystem : IteratingSystem {
 
         if (cam.target == null) return
 
-        val target = tm.get(cam.target)
-
-        if (target == null) return
+        val target = tm.get(cam.target) ?: return
 
         val camera = cam.camera;
 
         val position = camera!!.position
-        position.x = camera.position.x + (target.pos.x * PPM - camera.position.x) * .1f
-        position.y = camera.position.y + (target.pos.y * PPM - camera.position.y) * .1f
+        position.x = camera.position.x + (target.pos.x /* * PPM*/ - camera.position.x) * .4f
+        position.y = camera.position.y + (target.pos.y /* * PPM*/ - camera.position.y) * .4f
 
         camera.position.set(position)
 

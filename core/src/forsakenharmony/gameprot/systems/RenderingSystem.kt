@@ -7,7 +7,6 @@ import com.badlogic.ashley.systems.IteratingSystem
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.Array
 import forsakenharmony.gameprot.components.BackgroundComponent
 import forsakenharmony.gameprot.components.TextureComponent
@@ -72,8 +71,7 @@ class RenderingSystem : IteratingSystem {
             batch.draw(tex.texture, t.pos.x - originX, t.pos.y - originY,
                     originX, originY, width, height,
                     t.scale.x * PIXELS_TO_METRES, t.scale.y * PIXELS_TO_METRES,
-                    MathUtils.radiansToDegrees * t.rotation,
-                    0, 0, width.toInt(), height.toInt(), false, false)
+                    t.rotation, 0, 0, width.toInt(), height.toInt(), false, false)
         }
 
         batch.end()
