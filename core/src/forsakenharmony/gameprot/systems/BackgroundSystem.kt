@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array
 import forsakenharmony.gameprot.components.BackgroundComponent
 import forsakenharmony.gameprot.components.TextureComponent
 import forsakenharmony.gameprot.components.TransformComponent
+import forsakenharmony.gameprot.utils.Constants.PIXELS_TO_METRES
 import java.util.*
 
 /**
@@ -42,24 +43,23 @@ class BackgroundSystem : IteratingSystem {
     override fun update(deltaTime: Float) {
         super.update(deltaTime)
 
-        render()
-    }
-
-    fun render() {
         val start = camera.unproject(Vector3())
         val size = camera.unproject(Vector3(camera.viewportWidth, camera.viewportHeight, 0f)).sub(start)
 
         renderQueue.sort(comparator)
 
-        camera.update()
-        batch.projectionMatrix = camera.combined
-        batch.begin()
+
         for (entity: Entity in renderQueue) {
             val trans = traM.get(entity)
             val texture = texM.get(entity).texture!!
-            batch.draw(texture, start.x, start.y, size.x, size.y, trans.pos.x.toInt(), trans.pos.y.toInt(), texture.width, texture.height, false, false);
+
+            batch.draw(texture, 0f, 0f, texture.width.toFloat() * PIXELS_TO_METRES, texture.height.toFloat() * PIXELS_TO_METRES)
+//            batch.draw(texture, 0f, 0f)
+//            batch.draw(texture, start.x, start.y, size.x, size.y, trans.pos.x.toInt(), trans.pos.y.toInt(), texture.width, texture.height, false, false);
         }
-        batch.end()
+
+
+        renderQueue.clear()
     }
 
     fun setCamera(camera: OrthographicCamera) {
@@ -71,6 +71,8 @@ class BackgroundSystem : IteratingSystem {
         val x = if (parallax) camera.position.x / parallaxFactor else camera.position.x;
         val y = if (parallax) camera.position.y / parallaxFactor else camera.position.y;
         t.pos.set(x, y, 10.0f)
+
+        val sth = texM.get(entity).texture
 
         renderQueue.add(entity)
     }

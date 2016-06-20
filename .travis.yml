@@ -4,4 +4,12 @@ before_install:
   - chmod +x gradlew
 
 install:
-  - ./gradlew build
+  - ./gradlew dist
+
+deploy:
+  provider: releases
+  api_key: ""
+  file: "./desktop/build/libs/gameprot.jar"
+  skip_cleanup: true
+  on:
+    tags: true

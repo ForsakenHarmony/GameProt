@@ -21,6 +21,8 @@ task dist(type: Jar) {
     manifest {
         attributes 'Main-Class': project.mainClassName
     }
+
+    archiveName = "gameprot.jar"
 }
 
 dist.dependsOn classes

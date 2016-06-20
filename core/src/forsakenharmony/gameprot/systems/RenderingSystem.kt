@@ -50,10 +50,6 @@ class RenderingSystem : IteratingSystem {
 
         renderQueue.sort(comparator)
 
-        cam.update()
-        batch.projectionMatrix = cam.combined
-        batch.begin()
-
         for (entity: Entity in renderQueue) {
             val tex: TextureComponent = textureM.get(entity)
 
@@ -74,7 +70,6 @@ class RenderingSystem : IteratingSystem {
                     t.rotation, 0, 0, width.toInt(), height.toInt(), false, false)
         }
 
-        batch.end()
         renderQueue.clear()
     }
 

@@ -31,6 +31,6 @@ object Assets {
         meteorBrown = Array(4, { i -> loadTexture("Meteors/meteorBrown_big" + (i + 1) + ".png")})
 
         backgroundTile = loadTexture("Backgrounds/darkPurple.png")
-        backgroundTile.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat)
+//        backgroundTile.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat)
     }
 }
