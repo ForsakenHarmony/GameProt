@@ -53,7 +53,7 @@ project(":desktop") {
         compile project(":core")
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        //compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+        compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
         required "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     }
@@ -64,10 +64,21 @@ project(":core") {
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-        //compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
-        //compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.3"
-        //compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.13.3"
+        compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.3"
+        compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.13.3"
+        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+        required "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    }
+}
+
+project(":server") {
+    apply plugin: 'kotlin'
+
+    dependencies {
+        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
         required "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     }

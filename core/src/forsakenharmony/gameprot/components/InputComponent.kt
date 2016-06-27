@@ -5,9 +5,14 @@ import com.badlogic.ashley.core.Component
 /**
  * @author ArmyOfAnarchists
  */
-object InputComponent : Component {
-    var forwardKey: Int = 0
-    var backKey: Int = 0
-    var leftKey: Int = 0
-    var rightKey: Int = 0
+class InputComponent : Component {
+    var forwardKey = 0
+    var backKey = 0
+    var leftKey = 0
+    var rightKey = 0
+
+    var slowTurnKey = 0
+
+    var fireKey = 0
+    var weaponSwitchKey = 0
 }

@@ -15,11 +15,14 @@ class PhysicsSystem : IteratingSystem {
     private var tm: ComponentMapper<TransformComponent>
     private var mm: ComponentMapper<MovementComponent>
 
-    constructor() : super(Family.all(TransformComponent.javaClass, MovementComponent.javaClass).get()) {
-        tm = ComponentMapper.getFor(TransformComponent.javaClass)
-        mm = ComponentMapper.getFor(MovementComponent.javaClass)
+    constructor() : super(Family.all(TransformComponent::class.java, MovementComponent::class.java).get()) {
+        tm = ComponentMapper.getFor(TransformComponent::class.java)
+        mm = ComponentMapper.getFor(MovementComponent::class.java)
     }
 
     override fun processEntity(entity: Entity?, deltaTime: Float) {
+        val movement = mm.get(entity)
+
+        movement.velocity.scl(1f - movement.drag)
     }
 }

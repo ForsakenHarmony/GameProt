@@ -5,26 +5,34 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.Family
 import com.badlogic.ashley.systems.IteratingSystem
 import forsakenharmony.gameprot.components.MovementComponent
+import forsakenharmony.gameprot.components.ProjectileComponent
 import forsakenharmony.gameprot.components.TransformComponent
 
 /**
  * @author ArmyOfAnarchists
  */
-class MovementSystem : IteratingSystem {
+class ProjectileSystem : IteratingSystem {
 
     private var tm: ComponentMapper<TransformComponent>
-    private var mm: ComponentMapper<MovementComponent>
+    private var pm: ComponentMapper<ProjectileComponent>
 
-    constructor() : super(Family.all(TransformComponent::class.java, MovementComponent::class.java).get()) {
+    init {
         tm = ComponentMapper.getFor(TransformComponent::class.java)
-        mm = ComponentMapper.getFor(MovementComponent::class.java)
+        pm = ComponentMapper.getFor(ProjectileComponent::class.java)
+    }
+
+    constructor() : super(Family.all(ProjectileComponent::class.java, TransformComponent::class.java, MovementComponent::class.java).get()) {
+
     }
 
     override fun processEntity(entity: Entity?, deltaTime: Float) {
         val transform = tm.get(entity)
-        val movement = mm.get(entity)
+        val projectile = pm.get(entity)
 
-        movement.velocity.add(movement.acceleration)
-        transform.pos.add(movement.velocity.x * deltaTime, movement.velocity.y * deltaTime, 0f)
+        projectile.timeout -= deltaTime
+
+        if(projectile.timeout <= 0)
+            engine.removeEntity(entity)
     }
+
 }

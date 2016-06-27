@@ -6,77 +6,79 @@ import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.Logger
 import forsakenharmony.gameprot.GameProt
-import forsakenharmony.gameprot.game.Assets
 import forsakenharmony.gameprot.game.World
 import forsakenharmony.gameprot.systems.*
+import forsakenharmony.gameprot.utils.Constants
 
 /**
  * @author ArmyOfAnarchists
  */
 class GameScreen : ScreenAdapter {
 
-    private val game: GameProt;
-    private val engine: PooledEngine;
+    private val game: GameProt
+    private val engine: PooledEngine
 
-    private var guiCam: OrthographicCamera
-    private var touchPoint: Vector2
+    private val log: Logger = Logger("GameScreen", Logger.DEBUG)
 
-    private var world: World
-    private val cam: OrthographicCamera
+    private val guiCam: OrthographicCamera = OrthographicCamera(1280f, 720f)
+    private var touchPoint: Vector2 = Vector2()
+
+    private val world: World
+    private val cam: OrthographicCamera = OrthographicCamera(Constants.FRUSTUM_WIDTH, Constants.FRUSTUM_HEIGHT)
+
+    init {
+        guiCam.position.set(1280f / 2f, 720f / 2f, 0f)
+    }
 
     constructor(game: GameProt) {
         this.game = game;
         this.engine = PooledEngine();
 
-        Assets;
+        world = World(engine, cam)
 
-        guiCam = OrthographicCamera(1280f, 720f)
-        guiCam.position.set(1280f / 2f, 720f / 2f, 0f)
-
-        touchPoint = Vector2()
-
-        world = World(engine)
-
-        engine.addSystem(BackgroundSystem(true, game.batch))
-        engine.addSystem(RenderingSystem(game.batch))
         engine.addSystem(CameraSystem())
-        engine.addSystem(MovementSystem())
-        engine.addSystem(PhysicsSystem())
         engine.addSystem(PlayerSystem())
 
-        System.currentTimeMillis()
+        engine.addSystem(ProjectileSystem())
+        engine.addSystem(WeaponSystem())
 
-        cam = engine.getSystem(RenderingSystem::class.java).camera
+        engine.addSystem(MovementSystem())
+        engine.addSystem(PhysicsSystem())
 
-        engine.getSystem(BackgroundSystem::class.java).setCamera(cam)
+        engine.addSystem(NetworkSystem(false))
+
+        engine.addSystem(RenderingSystem(cam, game.batch))
+        engine.addSystem(UISystem(cam, game.batch))
 
         world.create()
     }
 
+    private var start: Long = System.currentTimeMillis()
+
     fun update(delta: Float) {
-
-        cam.update()
-        game.batch.projectionMatrix = cam.combined
-
-        game.batch.begin()
         engine.update(delta)
-        game.batch.end()
 
-        if (Gdx.input.justTouched()) {
-            var pos = Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat(), 0f)
-            pos = engine.getSystem(RenderingSystem::class.java).camera.unproject(pos)
-
-            println(pos)
+        if(System.currentTimeMillis().minus(start) >= 1000L){
+            log.debug("Entity Count: " + engine.entities.size())
+            start = System.currentTimeMillis()
         }
+
+//        if (Gdx.input.justTouched()) {
+//            var pos = Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat(), 0f)
+//            pos = cam.unproject(pos)
+//            println("CLICK")
+//            println(pos)
+//        }
     }
 
     override fun render(delta: Float) {
         update(delta)
     }
 
-    override fun dispose() {
-        System.out.println("Close?")
-        super.dispose()
+    override fun hide(){
+        engine.removeAllEntities()
+        engine.clearPools()
     }
 }

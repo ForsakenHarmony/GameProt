@@ -5,9 +5,8 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.Family
 import com.badlogic.ashley.systems.IteratingSystem
 import forsakenharmony.gameprot.components.CameraComponent
+import forsakenharmony.gameprot.components.MovementComponent
 import forsakenharmony.gameprot.components.TransformComponent
-
-import forsakenharmony.gameprot.utils.Constants.PPM
 
 /**
  * @author ArmyOfAnarchists
@@ -15,29 +14,36 @@ import forsakenharmony.gameprot.utils.Constants.PPM
 class CameraSystem : IteratingSystem {
 
     private var tm: ComponentMapper<TransformComponent>
+    private var mm: ComponentMapper<MovementComponent>
     private var cm: ComponentMapper<CameraComponent>
 
-    constructor() : super(Family.all(CameraComponent.javaClass).get()) {
-        tm = ComponentMapper.getFor(TransformComponent.javaClass)
-        cm = ComponentMapper.getFor(CameraComponent.javaClass)
+    init {
+        tm = ComponentMapper.getFor(TransformComponent::class.java)
+        cm = ComponentMapper.getFor(CameraComponent::class.java)
+        mm = ComponentMapper.getFor(MovementComponent::class.java)
     }
 
+    constructor() : super(Family.all(CameraComponent::class.java).get())
+
     override fun processEntity(entity: Entity?, deltaTime: Float) {
-        val cam = cm.get(entity)
+        val camera = cm.get(entity)
 
-        if (cam.target == null) return
+        val target = tm.get(camera.target) ?: return
 
-        val target = tm.get(cam.target) ?: return
+        val movement = mm.get(entity)
 
-        val camera = cam.camera;
+        val position = camera.position
 
-        val position = camera!!.position
-        position.x = camera.position.x + (target.pos.x /* * PPM*/ - camera.position.x) * .4f
-        position.y = camera.position.y + (target.pos.y /* * PPM*/ - camera.position.y) * .4f
+//        position.x = camera.position.x + (target.pos.x - camera.position.x) * .5f
+//        position.y = camera.position.y + (target.pos.y - camera.position.y) * .5f
+
+//        position.x = target.x + (movement.velocity.x / 5)
+//        position.y = target.y + (movement.velocity.y / 5)
+
+        position.x = position.x + (target.x + (movement.velocity.x / 5) - position.x) * .3f
+        position.y = position.y + (target.y + (movement.velocity.y / 5) - position.y) * .3f
 
         camera.position.set(position)
-
-        cam.camera = camera
     }
 
 }
