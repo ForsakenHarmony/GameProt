@@ -118,4 +118,8 @@ object Assets {
     fun getTexture(name: String): TextureRegion? {
         return sheetTextures[name]
     }
+
+    fun dispose(){
+        manager.dispose()
+    }
 }

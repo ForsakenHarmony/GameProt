@@ -10,5 +10,9 @@ object Constants {
     const val FRUSTUM_WIDTH: Float = 8f
     const val FRUSTUM_HEIGHT: Float = 9f
 
-    const val UIDist: Float = 2f
+    const val UI_DIST: Float = 2f
+
+    const val SHIP_DAMPING: Float = 1.3f
+
+    const val DEBUG: Boolean = true
 }

@@ -9,12 +9,15 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
+import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.utils.Array
 import forsakenharmony.gameprot.components.BackgroundComponent
 import forsakenharmony.gameprot.components.CameraComponent
 import forsakenharmony.gameprot.components.TextureComponent
 import forsakenharmony.gameprot.components.TransformComponent
 import forsakenharmony.gameprot.utils.Constants
+import forsakenharmony.gameprot.utils.Constants.DEBUG
 import forsakenharmony.gameprot.utils.Constants.PIXELS_TO_METRES
 import java.util.*
 
@@ -25,6 +28,7 @@ class RenderingSystem : IteratingSystem {
 
     private var batch: SpriteBatch
     private val shapeRenderer: ShapeRenderer;
+    private val b2d: Box2DDebugRenderer
 
     private var renderQueue: Array<Entity>
     private var comparator: Comparator<Entity>
@@ -37,6 +41,8 @@ class RenderingSystem : IteratingSystem {
 
     private val cameras: Array<CameraComponent>
 
+    private val world: World
+
     init {
         texM = ComponentMapper.getFor(TextureComponent::class.java)
         traM = ComponentMapper.getFor(TransformComponent::class.java)
@@ -46,6 +52,8 @@ class RenderingSystem : IteratingSystem {
         shapeRenderer = ShapeRenderer()
         shapeRenderer.setAutoShapeType(true)
 
+        b2d = Box2DDebugRenderer()
+
         cameras = Array()
 
         renderQueue = Array()
@@ -53,9 +61,10 @@ class RenderingSystem : IteratingSystem {
         comparator = Comparator { a, b -> Math.signum(traM.get(b).pos.z - traM.get(a).pos.z).toInt() }
     }
 
-    constructor(camera: OrthographicCamera, batch: SpriteBatch) : super(Family.all(TransformComponent::class.java, TextureComponent::class.java).get()) {
+    constructor(camera: OrthographicCamera, batch: SpriteBatch, world: World) : super(Family.all(TransformComponent::class.java, TextureComponent::class.java).get()) {
         this.cam = camera
         this.batch = batch
+        this.world = world
     }
 
     override fun update(deltaTime: Float) {
@@ -145,6 +154,8 @@ class RenderingSystem : IteratingSystem {
         }
 
         batch.end()
+
+        if(DEBUG) b2d.render(world, cam.combined)
     }
 
     override fun processEntity(entity: Entity?, deltaTime: Float) {

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import forsakenharmony.gameprot.screens.GameScreen
 import forsakenharmony.gameprot.screens.SplashScreen
+import forsakenharmony.gameprot.utils.Assets
 import forsakenharmony.gameprot.utils.Settings
 
 /**
@@ -42,5 +43,7 @@ open class GameProt : Game() {
     override fun dispose() {
         screen.dispose()
         super.dispose()
+        batch.dispose()
+        Assets.dispose()
     }
 }

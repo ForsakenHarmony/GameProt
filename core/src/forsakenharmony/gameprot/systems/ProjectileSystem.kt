@@ -4,35 +4,41 @@ import com.badlogic.ashley.core.ComponentMapper
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.Family
 import com.badlogic.ashley.systems.IteratingSystem
-import forsakenharmony.gameprot.components.MovementComponent
+import forsakenharmony.gameprot.components.PhysicsComponent
 import forsakenharmony.gameprot.components.ProjectileComponent
 import forsakenharmony.gameprot.components.TransformComponent
+import forsakenharmony.gameprot.game.World
 
 /**
  * @author ArmyOfAnarchists
  */
 class ProjectileSystem : IteratingSystem {
 
-    private var tm: ComponentMapper<TransformComponent>
-    private var pm: ComponentMapper<ProjectileComponent>
+    private var traM: ComponentMapper<TransformComponent>
+    private var proM: ComponentMapper<ProjectileComponent>
+    private var phyM: ComponentMapper<PhysicsComponent>
 
     init {
-        tm = ComponentMapper.getFor(TransformComponent::class.java)
-        pm = ComponentMapper.getFor(ProjectileComponent::class.java)
+        traM = ComponentMapper.getFor(TransformComponent::class.java)
+        proM = ComponentMapper.getFor(ProjectileComponent::class.java)
+        phyM = ComponentMapper.getFor(PhysicsComponent::class.java)
     }
 
-    constructor() : super(Family.all(ProjectileComponent::class.java, TransformComponent::class.java, MovementComponent::class.java).get()) {
+    constructor() : super(Family.all(ProjectileComponent::class.java, TransformComponent::class.java, PhysicsComponent::class.java).get()) {
 
     }
 
     override fun processEntity(entity: Entity?, deltaTime: Float) {
-        val transform = tm.get(entity)
-        val projectile = pm.get(entity)
+//        val transform = tm.get(entity)
+        val projectile = proM.get(entity)
+        val physics = phyM.get(entity)
 
         projectile.timeout -= deltaTime
 
-        if(projectile.timeout <= 0)
+        if (projectile.timeout <= 0) {
+            World.physWorld.destroyBody(physics.body)
             engine.removeEntity(entity)
+        }
     }
 
 }

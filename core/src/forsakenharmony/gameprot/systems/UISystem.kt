@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import forsakenharmony.gameprot.components.*
 import forsakenharmony.gameprot.utils.Constants
-import forsakenharmony.gameprot.utils.Constants.UIDist
+import forsakenharmony.gameprot.utils.Constants.UI_DIST
 import forsakenharmony.gameprot.utils.ShapeRenderer
 
 /**
@@ -96,12 +96,12 @@ class UISystem : IteratingSystem {
 
         val playerTransform = tm.get(player)
 
-        if (transform.pos.dst(playerTransform.pos) <= UIDist) return
+        if (transform.pos.dst(playerTransform.pos) <= UI_DIST) return
 
         val shipIcon = sm.get(entity).iconTexture
 
         val rot = Math.atan2((transform.y - playerTransform.y).toDouble(), (transform.x - playerTransform.x).toDouble()).toFloat() * MathUtils.radiansToDegrees
-        val pos = Vector2(UIDist, 0f).rotate(rot)
+        val pos = Vector2(UI_DIST, 0f).rotate(rot)
 
         val width: Float = shipIcon.regionWidth.toFloat()
         val height: Float = shipIcon.regionHeight.toFloat()
@@ -121,7 +121,7 @@ class UISystem : IteratingSystem {
 
         val transform = tm.get(player)
 //            val rotation = transform.rotation + 90 % 360
-        shapeRenderer.circle(transform.x, transform.y, UIDist - 0.2f, 40)
+        shapeRenderer.circle(transform.x, transform.y, UI_DIST - 0.2f, 40)
     }
 
     override fun processEntity(entity: Entity?, deltaTime: Float) {

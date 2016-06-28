@@ -5,11 +5,13 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.Family
 import com.badlogic.ashley.systems.IteratingSystem
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import forsakenharmony.gameprot.components.InputComponent
-import forsakenharmony.gameprot.components.MovementComponent
+import forsakenharmony.gameprot.components.PhysicsComponent
 import forsakenharmony.gameprot.components.TransformComponent
 import forsakenharmony.gameprot.components.WeaponComponent
+import forsakenharmony.gameprot.utils.Constants.SHIP_DAMPING
 
 /**
  * @author ArmyOfAnarchists
@@ -17,30 +19,26 @@ import forsakenharmony.gameprot.components.WeaponComponent
 class PlayerSystem : IteratingSystem {
 
     private val im: ComponentMapper<InputComponent>
-    private val mm: ComponentMapper<MovementComponent>
     private val tm: ComponentMapper<TransformComponent>
     private val wm: ComponentMapper<WeaponComponent>
+    private val pm: ComponentMapper<PhysicsComponent>
 
-    private val playerAcceleration = 0.15f
-    private val rotationSpeed = 180f
-    private val maxSpeed = 10f
 
     init {
         im = ComponentMapper.getFor(InputComponent::class.java)
-        mm = ComponentMapper.getFor(MovementComponent::class.java)
         tm = ComponentMapper.getFor(TransformComponent::class.java)
         wm = ComponentMapper.getFor(WeaponComponent::class.java)
+        pm = ComponentMapper.getFor(PhysicsComponent::class.java)
     }
 
-    constructor() : super(Family.all(InputComponent::class.java, MovementComponent::class.java, TransformComponent::class.java).get()) {
-
-    }
+    constructor() : super(Family.all(InputComponent::class.java, TransformComponent::class.java, PhysicsComponent::class.java).get())
 
     override fun processEntity(entity: Entity?, deltaTime: Float) {
+
         val input = im.get(entity)
-        val movement = mm.get(entity)
         val transform = tm.get(entity)
         val weapons = wm.get(entity)
+        val physics = pm.get(entity)
 
         val forward = Gdx.input.isKeyPressed(input.forwardKey)
         val back = Gdx.input.isKeyPressed(input.backKey)
@@ -51,37 +49,50 @@ class PlayerSystem : IteratingSystem {
 
         val fire = Gdx.input.isKeyPressed(input.fireKey)
 
+        physics.body.isActive = true
+        physics.body.isAwake = true
+
         var forwardVector = Vector2(0f, 1f)
         forwardVector = forwardVector.rotate(transform.rotation)
 
-        if (fire && weapons != null) weapons.currentWeapon.fire(transform.x, transform.y, transform.rotation, null)
+        if (fire && weapons != null) {
+            val bulletTransform = forwardVector.cpy().scl(0.2f).add(transform.x, transform.y)
+            weapons.currentWeapon.fire(bulletTransform.x, bulletTransform.y, transform.rotation, null)
+        }
 
         if (forward) {
-            movement.acceleration.set(forwardVector.scl(playerAcceleration, playerAcceleration))
+            physics.body.applyForceToCenter(forwardVector.scl(playerAcceleration * physics.body.mass), true)
         } else {
-            movement.acceleration.set(0f, 0f)
         }
 
+        physics.body.linearDamping = SHIP_DAMPING
         if (back) {
-            movement.acceleration.set(0f, 0f)
-            movement.velocity.scl(0.95f)
+            physics.body.linearDamping = 2.2f
         }
 
-        if (movement.velocity.len() > maxSpeed) {
-            val scale = maxSpeed / movement.velocity.len()
-            movement.velocity.scl(scale, scale)
+        if (physics.body.linearVelocity.len() > maxSpeed) {
+            val scale = maxSpeed / physics.body.linearVelocity.len()
+            physics.body.linearVelocity.scl(scale, scale)
         }
 
-        var rotationSpeed = this.rotationSpeed
+        var rotationSpeed: Float = rotationSpeed
 
         if (slowTurn) {
             rotationSpeed /= 2
         }
 
         if (right) {
-            if (!left) transform.rotation -= rotationSpeed * deltaTime
+            if (!left) physics.body.angularVelocity = -rotationSpeed
         } else if (left) {
-            transform.rotation += rotationSpeed * deltaTime
+            physics.body.angularVelocity = rotationSpeed
+        } else {
+            physics.body.angularVelocity = 0f
         }
+    }
+
+    companion object {
+        const val playerAcceleration = 20f
+        const val rotationSpeed = 140f * MathUtils.degreesToRadians
+        const val maxSpeed = 10f
     }
 }

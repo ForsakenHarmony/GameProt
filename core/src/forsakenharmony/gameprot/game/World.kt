@@ -4,20 +4,32 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.physics.box2d.Body
+import com.badlogic.gdx.physics.box2d.BodyDef
+import com.badlogic.gdx.physics.box2d.PolygonShape
+import com.badlogic.gdx.physics.box2d.World
 import forsakenharmony.gameprot.components.*
 import forsakenharmony.gameprot.utils.Assets
+import forsakenharmony.gameprot.utils.Constants
+import forsakenharmony.gameprot.utils.Constants.PIXELS_TO_METRES
+import forsakenharmony.gameprot.utils.Constants.SHIP_DAMPING
 import forsakenharmony.gameprot.utils.Settings
 
 /**
  * @author ArmyOfAnarchists
  */
-class World {
-    private val engine: PooledEngine
-    private val camera: OrthographicCamera
+object World {
+    var engine: PooledEngine
+    var camera: OrthographicCamera
 
-    constructor(engine: PooledEngine, camera: OrthographicCamera) {
-        this.camera = camera
-        this.engine = engine
+    val physWorld: World
+
+    init {
+        physWorld = World(Vector2(), true)
+        camera = OrthographicCamera(Constants.FRUSTUM_WIDTH, Constants.FRUSTUM_HEIGHT)
+        engine = PooledEngine()
     }
 
     fun create() {
@@ -56,31 +68,29 @@ class World {
         engine.addEntity(entity)
     }
 
-    fun createShip(x: Float, y: Float, color: Int, type: Int) : Entity{
-        if(color < 0 || color > 3){
+    fun createShip(x: Float, y: Float, color: Int, type: Int): Entity {
+        if (color < 0 || color > 3) {
             throw IllegalStateException("Color has to be in the Range of 0-3")
-        }else if(type < 0 || type > 2){
+        } else if (type < 0 || type > 2) {
             throw IllegalStateException("Type has to be in the Range of 0-2")
         }
 
         val entity = engine.createEntity()
 
         val position = engine.createComponent(TransformComponent::class.java)
-        val movement = engine.createComponent(MovementComponent::class.java)
         val texture = engine.createComponent(TextureComponent::class.java)
         val ui = engine.createComponent(UIComponent::class.java)
         val ship = engine.createComponent(ShipComponent::class.java)
+        val physics = engine.createComponent(PhysicsComponent::class.java)
 
         position.scale.set(0.5f, 0.5f)
         position.set(x, y)
-
-        movement.drag = 0.005f
 
         val array: Array<TextureRegion>
         val iconArray: Array<TextureRegion>
 
         when (color) {
-            0 ->{
+            0 -> {
                 array = Assets.playerShipBlue
                 iconArray = Assets.playerShipBlueIcon
             }
@@ -96,18 +106,26 @@ class World {
                 array = Assets.playerShipRed
                 iconArray = Assets.playerShipRedIcon
             }
-            else -> throw IllegalStateException("This has been checked before, but the Compiler is dumb")
+            else -> throw IllegalStateException("This has been checked before, but the compiler is dumb, well no compiler would be intelligent enough for this. If this ever throws, blame Kotlin!")
         }
 
         texture.texture = array[type]
         ship.shipTexture = texture.texture
         ship.iconTexture = iconArray[type]
 
+        physics.body = createBox(x, y, texture.texture.regionWidth.toFloat() * PIXELS_TO_METRES, texture.texture.regionHeight.toFloat() * PIXELS_TO_METRES, false, false, "Ship")
+        physics.body.isSleepingAllowed = false
+        physics.body.linearDamping = SHIP_DAMPING
+
+        val mass = physics.body.massData
+        mass.mass = 5f
+        physics.body.massData = mass
+
         entity.add(position)
-        entity.add(movement)
         entity.add(texture)
         entity.add(ui)
         entity.add(ship)
+        entity.add(physics)
 
         return entity
     }
@@ -173,4 +191,38 @@ class World {
 
         engine.entities
     }
+
+    fun createBox(x: Float, y: Float, rot: Float, width: Float, height: Float, isStatic: Boolean, fixedRot: Boolean, tag: String): Body {
+        val pBody: Body
+
+        val def = BodyDef()
+
+        if (isStatic)
+            def.type = BodyDef.BodyType.StaticBody
+        else
+            def.type = BodyDef.BodyType.DynamicBody
+
+        def.position.set(x, y)
+        def.angle = rot * MathUtils.degreesToRadians
+        def.fixedRotation = fixedRot
+
+        pBody = physWorld.createBody(def)
+        pBody.userData = tag
+
+        val shape = PolygonShape()
+        shape.setAsBox(width / 4, height / 4)
+
+        pBody.createFixture(shape, 1.0f)
+        shape.dispose()
+
+        println(pBody.mass)
+        return pBody
+    }
+
+    fun createBox(x: Float, y: Float, width: Float, height: Float, isStatic: Boolean, fixedRot: Boolean, tag: String): Body =
+            createBox(x, y, 0f, width, height, isStatic, fixedRot, tag)
+
+
+    fun createBox(x: Float, y: Float, width: Float, height: Float, tag: String): Body =
+            createBox(x, y, width, height, true, true, tag)
 }
