@@ -49,7 +49,7 @@ object Assets {
         }
 
     init {
-        manager.logger.level = Logger.INFO
+//        manager.logger.level = Logger.INFO
     }
 
     fun loadTexture(file: String): Texture {

@@ -15,6 +15,7 @@ import forsakenharmony.gameprot.utils.Assets
 import forsakenharmony.gameprot.utils.Constants
 import forsakenharmony.gameprot.utils.Constants.PIXELS_TO_METRES
 import forsakenharmony.gameprot.utils.Constants.SHIP_DAMPING
+import forsakenharmony.gameprot.utils.Data
 import forsakenharmony.gameprot.utils.Settings
 
 /**
@@ -29,7 +30,7 @@ object World {
     init {
         physWorld = World(Vector2(), true)
         camera = OrthographicCamera(Constants.FRUSTUM_WIDTH, Constants.FRUSTUM_HEIGHT)
-        engine = PooledEngine()
+        engine = PooledEngine(40, 200, 40, 200)
     }
 
     fun create() {
@@ -113,7 +114,7 @@ object World {
         ship.shipTexture = texture.texture
         ship.iconTexture = iconArray[type]
 
-        physics.body = createBox(x, y, texture.texture.regionWidth.toFloat() * PIXELS_TO_METRES, texture.texture.regionHeight.toFloat() * PIXELS_TO_METRES, false, false, "Ship")
+        physics.body = createBox(x, y, texture.texture.regionWidth.toFloat() * PIXELS_TO_METRES, texture.texture.regionHeight.toFloat() * PIXELS_TO_METRES, false, false, Data("Ship", entity))
         physics.body.isSleepingAllowed = false
         physics.body.linearDamping = SHIP_DAMPING
 
@@ -192,7 +193,7 @@ object World {
         engine.entities
     }
 
-    fun createBox(x: Float, y: Float, rot: Float, width: Float, height: Float, isStatic: Boolean, fixedRot: Boolean, tag: String): Body {
+    fun createBox(x: Float, y: Float, rot: Float, width: Float, height: Float, isStatic: Boolean, fixedRot: Boolean, data: Data): Body {
         val pBody: Body
 
         val def = BodyDef()
@@ -207,7 +208,7 @@ object World {
         def.fixedRotation = fixedRot
 
         pBody = physWorld.createBody(def)
-        pBody.userData = tag
+        pBody.userData = data
 
         val shape = PolygonShape()
         shape.setAsBox(width / 4, height / 4)
@@ -215,14 +216,13 @@ object World {
         pBody.createFixture(shape, 1.0f)
         shape.dispose()
 
-        println(pBody.mass)
         return pBody
     }
 
-    fun createBox(x: Float, y: Float, width: Float, height: Float, isStatic: Boolean, fixedRot: Boolean, tag: String): Body =
+    fun createBox(x: Float, y: Float, width: Float, height: Float, isStatic: Boolean, fixedRot: Boolean, tag: Data): Body =
             createBox(x, y, 0f, width, height, isStatic, fixedRot, tag)
 
 
-    fun createBox(x: Float, y: Float, width: Float, height: Float, tag: String): Body =
+    fun createBox(x: Float, y: Float, width: Float, height: Float, tag: Data): Body =
             createBox(x, y, width, height, true, true, tag)
 }

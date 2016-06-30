@@ -49,15 +49,15 @@ class GameScreen : ScreenAdapter {
         engine.addSystem(UISystem(cam, game.batch))
     }
 
-    private var start: Long = System.currentTimeMillis()
+//    private var start: Long = System.currentTimeMillis()
 
     fun update(delta: Float) {
         engine.update(delta)
 
-        if (System.currentTimeMillis().minus(start) >= 1000L) {
-            log.debug("Entity Count: " + engine.entities.size())
-            start = System.currentTimeMillis()
-        }
+//        if (System.currentTimeMillis().minus(start) >= 1000L) {
+//            log.debug("Entity Count: " + engine.entities.size())
+//            start = System.currentTimeMillis()
+//        }
 
 //        if (Gdx.input.justTouched()) {
 //            var pos = Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat(), 0f)

@@ -56,7 +56,7 @@ class PlayerSystem : IteratingSystem {
         forwardVector = forwardVector.rotate(transform.rotation)
 
         if (fire && weapons != null) {
-            val bulletTransform = forwardVector.cpy().scl(0.2f).add(transform.x, transform.y)
+            val bulletTransform = forwardVector.cpy().scl(0.3f).add(transform.x, transform.y)
             weapons.currentWeapon.fire(bulletTransform.x, bulletTransform.y, transform.rotation, null)
         }
 

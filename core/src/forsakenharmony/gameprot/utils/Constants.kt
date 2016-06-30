@@ -13,6 +13,4 @@ object Constants {
     const val UI_DIST: Float = 2f
 
     const val SHIP_DAMPING: Float = 1.3f
-
-    const val DEBUG: Boolean = true
 }
