@@ -8,23 +8,22 @@ import com.badlogic.gdx.utils.Logger
 import forsakenharmony.gameprot.GameProt
 import forsakenharmony.gameprot.game.World
 import forsakenharmony.gameprot.systems.*
-import forsakenharmony.gameprot.utils.Constants
 
 /**
  * @author ArmyOfAnarchists
  */
 class GameScreen : ScreenAdapter {
-
+    
     private val game: GameProt
     private val engine: PooledEngine
-
+    
     private val log: Logger = Logger("GameScreen", Logger.DEBUG)
-
+    
     private val guiCam: OrthographicCamera = OrthographicCamera(1280f, 720f)
     private var touchPoint: Vector2 = Vector2()
-
+    
     private val cam: OrthographicCamera
-
+    
     init {
         World
         this.engine = World.engine
@@ -32,26 +31,27 @@ class GameScreen : ScreenAdapter {
         World.create()
         guiCam.position.set(1280f / 2f, 720f / 2f, 0f)
     }
-
+    
     constructor(game: GameProt) {
-        this.game = game;
-
+        this.game = game
+        
         engine.addSystem(PlayerSystem())
         engine.addSystem(PhysicsSystem(World.physWorld))
         engine.addSystem(CameraSystem())
-
+        
         engine.addSystem(ProjectileSystem())
         engine.addSystem(WeaponSystem())
-
+        
         engine.addSystem(NetworkSystem(false))
-
+        
         engine.addSystem(RenderingSystem(cam, game.batch, World.physWorld))
         engine.addSystem(UISystem(cam, game.batch))
     }
 
 //    private var start: Long = System.currentTimeMillis()
-
+    
     fun update(delta: Float) {
+//        log.debug("Tick")
         engine.update(delta)
 
 //        if (System.currentTimeMillis().minus(start) >= 1000L) {
@@ -66,11 +66,11 @@ class GameScreen : ScreenAdapter {
 //            println(pos)
 //        }
     }
-
+    
     override fun render(delta: Float) {
         update(delta)
     }
-
+    
     override fun hide() {
         engine.removeAllEntities()
         engine.clearPools()

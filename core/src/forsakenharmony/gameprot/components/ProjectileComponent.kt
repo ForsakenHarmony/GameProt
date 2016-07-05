@@ -12,4 +12,5 @@ class ProjectileComponent : Component {
     var turnSpeed: Float = 0f
     var timeout: Float = Float.POSITIVE_INFINITY
     var createdBy: Entity? = null
+    var damage: Float = 0f
 }

@@ -25,6 +25,6 @@ class WeaponComponent : Component {
         }
 
     fun init(engine: PooledEngine){
-        weapons.add(Gun(engine))
+        weapons.add(Gun())
     }
 }

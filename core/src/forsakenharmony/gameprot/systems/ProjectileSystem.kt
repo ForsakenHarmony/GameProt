@@ -29,15 +29,12 @@ class ProjectileSystem : IteratingSystem {
     }
 
     override fun processEntity(entity: Entity?, deltaTime: Float) {
-//        val transform = tm.get(entity)
         val projectile = proM.get(entity)
-        val physics = phyM.get(entity)
 
         projectile.timeout -= deltaTime
 
         if (projectile.timeout <= 0) {
-            World.physWorld.destroyBody(physics.body)
-            engine.removeEntity(entity)
+            World.removeEntity(entity!!)
         }
     }
 

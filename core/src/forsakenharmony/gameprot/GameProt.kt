@@ -12,7 +12,7 @@ import forsakenharmony.gameprot.utils.Settings
 /**
  * @author ArmyOfAnarchists
  */
-open class GameProt : Game() {
+class GameProt : Game() {
     lateinit var batch: SpriteBatch
     private var fullScreen = false
     

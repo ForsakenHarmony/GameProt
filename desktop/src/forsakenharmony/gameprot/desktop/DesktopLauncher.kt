@@ -3,7 +3,6 @@ package forsakenharmony.gameprot.desktop
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import forsakenharmony.gameprot.GameProt
-import forsakenharmony.gameprot.utils.Assets
 import forsakenharmony.gameprot.utils.Settings
 
 object DesktopLauncher {

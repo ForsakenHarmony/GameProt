@@ -13,4 +13,8 @@ class Data {
         this.tag = tag
         this.entity = entity
     }
+    
+    override fun toString(): String {
+        return javaClass.simpleName.toString() + " " + entity.toString() + " TAG:" + tag
+    }
 }
