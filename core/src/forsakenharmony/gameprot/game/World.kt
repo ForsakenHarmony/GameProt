@@ -62,6 +62,8 @@ object World {
         if (phyM.has(entity)) {
             physWorld.destroyBody(phyM[entity].body)
         }
+        entity.flags = 0
+        engine.removeEntity(entity)
     }
     
     fun createPlayer(x: Float, y: Float, nr: Int) {
