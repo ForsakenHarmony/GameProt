@@ -35,6 +35,8 @@ class PhysicsSystem : IteratingSystem {
     
     constructor(world: com.badlogic.gdx.physics.box2d.World) : super(Family.all(TransformComponent::class.java, PhysicsComponent::class.java).get()) {
         this.world = world
+        
+        world.setContactListener(ContactListener)
     }
     
     override fun update(deltaTime: Float) {
@@ -57,13 +59,19 @@ class PhysicsSystem : IteratingSystem {
         val physics = phyM.get(entity)
         val transform = traM.get(entity)
         
-        world.setContactListener(ContactListener)
         transform.pos.set(physics.body.position, transform.pos.z)
         transform.rotation = physics.body.angle * MathUtils.radiansToDegrees
     }
     
     companion object {
         private val toRemove: Array<Entity> = Array()
+        
+        fun addRemove(entity: Entity) {
+            if (toRemove.contains(entity)) {
+                return
+            }
+            toRemove.add(entity)
+        }
     }
     
     private object ContactListener : ContactAdapter() {
@@ -88,31 +96,27 @@ class PhysicsSystem : IteratingSystem {
             val dataA = contact.fixtureA.body.userData as Data
             val dataB = contact.fixtureB.body.userData as Data
             
-            if (dataA.tag.equals("Bullet") || dataB.tag.equals("Bullet")) {
-                if (dataA.tag.equals("Bullet")) {
-                    if (dataB.tag.equals("Bullet")) {
-                        toRemove.add(dataB.entity)
+            if (dataA.tag == "Bullet" || dataB.tag == "Bullet") {
+                if (dataA.tag == "Bullet") {
+                    if (dataB.tag == "Bullet") {
+                        addRemove(dataB.entity)
                     }
                     
-                    if (dataB.tag.equals("Ship")) {
+                    if (dataB.tag == "Ship") {
                         staM[dataB.entity].health -= proM[dataA.entity].damage
                     }
                     
-                    toRemove.add(dataA.entity)
+                    addRemove(dataA.entity)
                     
-                } else if (dataB.tag.equals("Bullet")) {
-                    if (dataA.tag.equals("Ship")) {
+                } else if (dataB.tag == "Bullet") {
+                    if (dataA.tag == "Ship") {
                         staM[dataA.entity].health -= proM[dataB.entity].damage
                     }
                     
-                    toRemove.add(dataB.entity)
+                    addRemove(dataB.entity)
                 }
             }
             //TODO: SHIP-SHIP/SHIP-WORLD COLLISIONS
-        }
-        
-        override fun endContact(contact: Contact?) {
-            
         }
     }
 }

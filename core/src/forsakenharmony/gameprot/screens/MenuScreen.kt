@@ -8,7 +8,7 @@ import forsakenharmony.gameprot.GameProt
  */
 class MenuScreen : ScreenAdapter {
 
-    private val game: GameProt;
+    private val game: GameProt
 
     constructor(game: GameProt) {
         this.game = game

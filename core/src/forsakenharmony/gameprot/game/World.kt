@@ -44,17 +44,8 @@ object World {
         createEnemy(5f, 5f)
     }
     
-    var entityID: Int = 1
-    
-    /**
-     * Fix for buggy entities
-     */
     fun createEntity(): Entity {
-        var entity = engine.createEntity()
-        while (entity.flags != 0) {
-            entity = engine.createEntity()
-        }
-        entity.flags = entityID++
+        val entity = engine.createEntity()
         return entity
     }
     
@@ -62,7 +53,6 @@ object World {
         if (phyM.has(entity)) {
             physWorld.destroyBody(phyM[entity].body)
         }
-        entity.flags = 0
         engine.removeEntity(entity)
     }
     

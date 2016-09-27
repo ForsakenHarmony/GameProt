@@ -10,10 +10,11 @@ buildscript {
     }
 }
 
+apply plugin: "idea"
 apply plugin: 'kotlin'
 
 allprojects {
-    //apply plugin: "idea"
+    apply plugin: "idea"
     apply plugin: 'kotlin'
 
     tasks.withType(JavaCompile) {
