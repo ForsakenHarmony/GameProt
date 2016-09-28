@@ -5,5 +5,5 @@ import com.badlogic.ashley.core.Component
 /**
  * @author ArmyOfAnarchists
  */
-class UIComponent : Component{
+class UIComponent : Component {
 }

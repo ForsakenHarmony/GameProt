@@ -13,29 +13,29 @@ import forsakenharmony.gameprot.game.World
  * @author ArmyOfAnarchists
  */
 class ProjectileSystem : IteratingSystem {
-
-    private var traM: ComponentMapper<TransformComponent>
-    private var proM: ComponentMapper<ProjectileComponent>
-    private var phyM: ComponentMapper<PhysicsComponent>
-
-    init {
-        traM = ComponentMapper.getFor(TransformComponent::class.java)
-        proM = ComponentMapper.getFor(ProjectileComponent::class.java)
-        phyM = ComponentMapper.getFor(PhysicsComponent::class.java)
+  
+  private var traM: ComponentMapper<TransformComponent>
+  private var proM: ComponentMapper<ProjectileComponent>
+  private var phyM: ComponentMapper<PhysicsComponent>
+  
+  init {
+    traM = ComponentMapper.getFor(TransformComponent::class.java)
+    proM = ComponentMapper.getFor(ProjectileComponent::class.java)
+    phyM = ComponentMapper.getFor(PhysicsComponent::class.java)
+  }
+  
+  constructor() : super(Family.all(ProjectileComponent::class.java, TransformComponent::class.java, PhysicsComponent::class.java).get()) {
+    
+  }
+  
+  override fun processEntity(entity: Entity?, deltaTime: Float) {
+    val projectile = proM.get(entity)
+    
+    projectile.timeout -= deltaTime
+    
+    if (projectile.timeout <= 0) {
+      World.removeEntity(entity!!)
     }
-
-    constructor() : super(Family.all(ProjectileComponent::class.java, TransformComponent::class.java, PhysicsComponent::class.java).get()) {
-
-    }
-
-    override fun processEntity(entity: Entity?, deltaTime: Float) {
-        val projectile = proM.get(entity)
-
-        projectile.timeout -= deltaTime
-
-        if (projectile.timeout <= 0) {
-            World.removeEntity(entity!!)
-        }
-    }
-
+  }
+  
 }

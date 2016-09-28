@@ -20,103 +20,103 @@ import net.dermetfan.gdx.physics.box2d.ContactAdapter
  * @author ArmyOfAnarchists
  */
 class PhysicsSystem : IteratingSystem {
+  
+  private val traM: ComponentMapper<TransformComponent>
+  private val phyM: ComponentMapper<PhysicsComponent>
+  
+  private val world: com.badlogic.gdx.physics.box2d.World
+  
+  private val log: Logger = Logger(javaClass.simpleName.toString(), Logger.DEBUG)
+  
+  init {
+    traM = ComponentMapper.getFor(TransformComponent::class.java)
+    phyM = ComponentMapper.getFor(PhysicsComponent::class.java)
+  }
+  
+  constructor(world: com.badlogic.gdx.physics.box2d.World) : super(Family.all(TransformComponent::class.java, PhysicsComponent::class.java).get()) {
+    this.world = world
     
-    private val traM: ComponentMapper<TransformComponent>
-    private val phyM: ComponentMapper<PhysicsComponent>
+    world.setContactListener(ContactListener)
+  }
+  
+  override fun update(deltaTime: Float) {
+    world.step(deltaTime, 8, 3)
+    processRemovals()
+    super.update(deltaTime)
+  }
+  
+  fun processRemovals() {
+    if (toRemove.size == 0) return
     
-    private val world: com.badlogic.gdx.physics.box2d.World
+    for (entity in toRemove) {
+      World.removeEntity(entity)
+    }
+    
+    toRemove.clear()
+  }
+  
+  override fun processEntity(entity: Entity?, deltaTime: Float) {
+    val physics = phyM.get(entity)
+    val transform = traM.get(entity)
+    
+    transform.pos.set(physics.body.position, transform.pos.z)
+    transform.rotation = physics.body.angle * MathUtils.radiansToDegrees
+  }
+  
+  companion object {
+    private val toRemove: Array<Entity> = Array()
+    
+    fun addRemove(entity: Entity) {
+      if (toRemove.contains(entity)) {
+        return
+      }
+      toRemove.add(entity)
+    }
+  }
+  
+  private object ContactListener : ContactAdapter() {
+    
+    private val proM: ComponentMapper<ProjectileComponent>
+    private val staM: ComponentMapper<StatusComponent>
     
     private val log: Logger = Logger(javaClass.simpleName.toString(), Logger.DEBUG)
     
     init {
-        traM = ComponentMapper.getFor(TransformComponent::class.java)
-        phyM = ComponentMapper.getFor(PhysicsComponent::class.java)
+      proM = ComponentMapper.getFor(ProjectileComponent::class.java)
+      staM = ComponentMapper.getFor(StatusComponent::class.java)
     }
     
-    constructor(world: com.badlogic.gdx.physics.box2d.World) : super(Family.all(TransformComponent::class.java, PhysicsComponent::class.java).get()) {
-        this.world = world
-        
-        world.setContactListener(ContactListener)
-    }
-    
-    override fun update(deltaTime: Float) {
-        world.step(deltaTime, 8, 3)
-        processRemovals()
-        super.update(deltaTime)
-    }
-    
-    fun processRemovals() {
-        if (toRemove.size == 0) return
-        
-        for (entity in toRemove) {
-            World.removeEntity(entity)
+    override fun beginContact(contact: Contact?) {
+      if (contact == null ||
+          contact.fixtureA.body.userData == null ||
+          contact.fixtureB.body.userData == null ||
+          contact.fixtureA.body.userData !is Data ||
+          contact.fixtureB.body.userData !is Data) return
+      
+      val dataA = contact.fixtureA.body.userData as Data
+      val dataB = contact.fixtureB.body.userData as Data
+      
+      if (dataA.tag == "Bullet" || dataB.tag == "Bullet") {
+        if (dataA.tag == "Bullet") {
+          if (dataB.tag == "Bullet") {
+            addRemove(dataB.entity)
+          }
+          
+          if (dataB.tag == "Ship") {
+            staM[dataB.entity].health -= proM[dataA.entity].damage
+          }
+          
+          addRemove(dataA.entity)
+          
+        } else if (dataB.tag == "Bullet") {
+          if (dataA.tag == "Ship") {
+            staM[dataA.entity].health -= proM[dataB.entity].damage
+          }
+          
+          addRemove(dataB.entity)
         }
-        
-        toRemove.clear()
+      }
+      //TODO: SHIP-SHIP/SHIP-WORLD COLLISIONS
     }
-    
-    override fun processEntity(entity: Entity?, deltaTime: Float) {
-        val physics = phyM.get(entity)
-        val transform = traM.get(entity)
-        
-        transform.pos.set(physics.body.position, transform.pos.z)
-        transform.rotation = physics.body.angle * MathUtils.radiansToDegrees
-    }
-    
-    companion object {
-        private val toRemove: Array<Entity> = Array()
-        
-        fun addRemove(entity: Entity) {
-            if (toRemove.contains(entity)) {
-                return
-            }
-            toRemove.add(entity)
-        }
-    }
-    
-    private object ContactListener : ContactAdapter() {
-        
-        private val proM: ComponentMapper<ProjectileComponent>
-        private val staM: ComponentMapper<StatusComponent>
-        
-        private val log: Logger = Logger(javaClass.simpleName.toString(), Logger.DEBUG)
-        
-        init {
-            proM = ComponentMapper.getFor(ProjectileComponent::class.java)
-            staM = ComponentMapper.getFor(StatusComponent::class.java)
-        }
-        
-        override fun beginContact(contact: Contact?) {
-            if (contact == null ||
-                    contact.fixtureA.body.userData == null ||
-                    contact.fixtureB.body.userData == null ||
-                    contact.fixtureA.body.userData !is Data ||
-                    contact.fixtureB.body.userData !is Data) return
-            
-            val dataA = contact.fixtureA.body.userData as Data
-            val dataB = contact.fixtureB.body.userData as Data
-            
-            if (dataA.tag == "Bullet" || dataB.tag == "Bullet") {
-                if (dataA.tag == "Bullet") {
-                    if (dataB.tag == "Bullet") {
-                        addRemove(dataB.entity)
-                    }
-                    
-                    if (dataB.tag == "Ship") {
-                        staM[dataB.entity].health -= proM[dataA.entity].damage
-                    }
-                    
-                    addRemove(dataA.entity)
-                    
-                } else if (dataB.tag == "Bullet") {
-                    if (dataA.tag == "Ship") {
-                        staM[dataA.entity].health -= proM[dataB.entity].damage
-                    }
-                    
-                    addRemove(dataB.entity)
-                }
-            }
-            //TODO: SHIP-SHIP/SHIP-WORLD COLLISIONS
-        }
-    }
+  }
 }

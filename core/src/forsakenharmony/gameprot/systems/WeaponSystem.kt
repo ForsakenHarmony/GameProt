@@ -9,18 +9,18 @@ import forsakenharmony.gameprot.components.WeaponComponent
 /**
  * @author ArmyOfAnarchists
  */
-class WeaponSystem : IteratingSystem{
-
-    private val wm: ComponentMapper<WeaponComponent>
-
-    init {
-        wm = ComponentMapper.getFor(WeaponComponent::class.java)
-    }
-
-    constructor(): super(Family.all(WeaponComponent::class.java).get())
-
-    override fun processEntity(entity: Entity?, deltaTime: Float) {
-        wm.get(entity).currentWeapon.update(deltaTime)
-    }
-
+class WeaponSystem : IteratingSystem {
+  
+  private val wm: ComponentMapper<WeaponComponent>
+  
+  init {
+    wm = ComponentMapper.getFor(WeaponComponent::class.java)
+  }
+  
+  constructor() : super(Family.all(WeaponComponent::class.java).get())
+  
+  override fun processEntity(entity: Entity?, deltaTime: Float) {
+    wm.get(entity).currentWeapon.update(deltaTime)
+  }
+  
 }

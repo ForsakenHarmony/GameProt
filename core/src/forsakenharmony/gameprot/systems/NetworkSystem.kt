@@ -10,14 +10,14 @@ import forsakenharmony.gameprot.components.NetworkComponent
  * @author ArmyOfAnarchists
  */
 class NetworkSystem : IteratingSystem {
-    val nm: ComponentMapper<NetworkComponent>
-    val server: Boolean
-
-    constructor(server: Boolean): super(Family.all(NetworkComponent::class.java).get()){
-        nm = ComponentMapper.getFor(NetworkComponent::class.java)
-        this.server = server
-    }
-
-    override fun processEntity(entity: Entity?, deltaTime: Float) {
-    }
+  val nm: ComponentMapper<NetworkComponent>
+  val server: Boolean
+  
+  constructor(server: Boolean) : super(Family.all(NetworkComponent::class.java).get()) {
+    nm = ComponentMapper.getFor(NetworkComponent::class.java)
+    this.server = server
+  }
+  
+  override fun processEntity(entity: Entity?, deltaTime: Float) {
+  }
 }

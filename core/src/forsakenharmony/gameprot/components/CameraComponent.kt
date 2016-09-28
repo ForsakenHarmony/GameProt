@@ -9,7 +9,8 @@ import com.badlogic.gdx.math.Vector3
  * @author ArmyOfAnarchists
  */
 class CameraComponent : Component {
-    lateinit var target: Entity
-    lateinit var camera: OrthographicCamera
-    val position: Vector3 = Vector3()
+  lateinit var target: Entity
+  lateinit var camera: OrthographicCamera
+  val position: Vector3 = Vector3()
+  var zoom: Float = 1.0f
 }

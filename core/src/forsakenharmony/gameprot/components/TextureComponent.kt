@@ -7,5 +7,5 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
  * @author ArmyOfAnarchists
  */
 class TextureComponent : Component {
-    lateinit var texture: TextureRegion
+  lateinit var texture: TextureRegion
 }

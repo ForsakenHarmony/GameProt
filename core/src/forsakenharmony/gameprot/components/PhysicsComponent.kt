@@ -6,6 +6,6 @@ import com.badlogic.gdx.physics.box2d.Body
 /**
  * @author ArmyOfAnarchists
  */
-class PhysicsComponent : Component{
-    lateinit var body: Body
+class PhysicsComponent : Component {
+  lateinit var body: Body
 }

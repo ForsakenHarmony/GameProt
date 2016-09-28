@@ -10,23 +10,23 @@ import forsakenharmony.gameprot.game.World
 /**
  * @author ArmyOfAnarchists
  */
-class StatusSystem : IteratingSystem{
+class StatusSystem : IteratingSystem {
+  
+  private val sm: ComponentMapper<StatusComponent>
+  
+  init {
+    sm = ComponentMapper.getFor(StatusComponent::class.java)
+  }
+  
+  constructor() : super(Family.all(StatusComponent::class.java).get()) {
     
-    private val sm :ComponentMapper<StatusComponent>
+  }
+  
+  override fun processEntity(entity: Entity?, deltaTime: Float) {
+    val status = sm[entity]
     
-    init {
-        sm = ComponentMapper.getFor(StatusComponent::class.java)
+    if (status.health <= 0f) {
+      World.removeEntity(entity!!)
     }
-    
-    constructor(): super(Family.all(StatusComponent::class.java).get()){
-        
-    }
-    
-    override fun processEntity(entity: Entity?, deltaTime: Float) {
-        val status = sm[entity]
-        
-        if(status.health <= 0f){
-            World.removeEntity(entity!!)
-        }
-    }
+  }
 }
